@@ -26,72 +26,6 @@ async def on_ready():
     print(f"✅ Bot connecté en tant que {bot.user}")
 
 @bot.command()
-async def setup_agence(ctx):
-    guild = ctx.guild
-
-    await ctx.send("🔧 Création des rôles...")
-
-    role_data = {
-        "👑 Direction": discord.Colour.dark_gold(),
-        "🧑‍💼 Manager": discord.Colour.blue(),
-        "🧰 Assistant": discord.Colour.green(),
-        "🔥 Modèle": discord.Colour.red(),
-        "👀 Visiteur": discord.Colour.light_grey(),
-        "🤖 Bot": discord.Colour.purple()
-    }
-
-    roles = {}
-    for name, color in role_data.items():
-        existing = discord.utils.get(guild.roles, name=name)
-        if existing:
-            roles[name] = existing
-        else:
-            roles[name] = await guild.create_role(name=name, colour=color)
-
-    await ctx.send("✅ Rôles créés !\n🔧 Création des salons...")
-
-    everyone = guild.default_role  # @everyone
-
-    categories = {
-        "🧠 Direction": {
-            "channels": ["annonces", "planning", "briefing"],
-            "role": roles["👑 Direction"]
-        },
-        "💬 Équipe": {
-            "channels": ["général", "modèles", "assistants", "managers"],
-            "role": None  # Public
-        },
-        "📸 Contenu": {
-            "channels": ["photos-à-publier", "vidéos-à-valider", "contenus-schedule", "contenus-custom"],
-            "role": None
-        },
-        "📈 Performance": {
-            "channels": ["statistiques", "feedbacks-clients", "objectifs"],
-            "role": None
-        },
-        "🤖 Automations": {
-            "channels": ["générateur-bio", "idées-légendes", "commandes-ai"],
-            "role": None
-        }
-    }
-
-    for cat_name, cat_info in categories.items():
-        role = cat_info["role"]
-        if role:
-            overwrites = {
-                everyone: discord.PermissionOverwrite(read_messages=False),
-                role: discord.PermissionOverwrite(read_messages=True)
-            }
-        else:
-            overwrites = None
-
-        category = await guild.create_category(cat_name, overwrites=overwrites)
-
-        for chan_name in cat_info["channels"]:
-            await guild.create_text_channel(chan_name, category=category)
-
-    await ctx.send("✅ Structure avec rôles et permissions créée avec succès !")
-
 async def contrat(ctx, numero: int, *, nom: str):
     offres = {
         1: {
@@ -176,6 +110,75 @@ async def contrat(ctx, numero: int, *, nom: str):
 
     await ctx.send(f"📄 Contrat généré pour **{nom}** avec l’offre **{offre['titre']}** :",
                    file=discord.File(fp=buffer, filename=f"Contrat_{nom.replace(' ', '_')}.pdf"))
+
+
+@bot.command()
+async def setup_agence(ctx):
+    guild = ctx.guild
+
+    await ctx.send("🔧 Création des rôles...")
+
+    role_data = {
+        "👑 Direction": discord.Colour.dark_gold(),
+        "🧑‍💼 Manager": discord.Colour.blue(),
+        "🧰 Assistant": discord.Colour.green(),
+        "🔥 Modèle": discord.Colour.red(),
+        "👀 Visiteur": discord.Colour.light_grey(),
+        "🤖 Bot": discord.Colour.purple()
+    }
+
+    roles = {}
+    for name, color in role_data.items():
+        existing = discord.utils.get(guild.roles, name=name)
+        if existing:
+            roles[name] = existing
+        else:
+            roles[name] = await guild.create_role(name=name, colour=color)
+
+    await ctx.send("✅ Rôles créés !\n🔧 Création des salons...")
+
+    everyone = guild.default_role  # @everyone
+
+    categories = {
+        "🧠 Direction": {
+            "channels": ["annonces", "planning", "briefing"],
+            "role": roles["👑 Direction"]
+        },
+        "💬 Équipe": {
+            "channels": ["général", "modèles", "assistants", "managers"],
+            "role": None  # Public
+        },
+        "📸 Contenu": {
+            "channels": ["photos-à-publier", "vidéos-à-valider", "contenus-schedule", "contenus-custom"],
+            "role": None
+        },
+        "📈 Performance": {
+            "channels": ["statistiques", "feedbacks-clients", "objectifs"],
+            "role": None
+        },
+        "🤖 Automations": {
+            "channels": ["générateur-bio", "idées-légendes", "commandes-ai"],
+            "role": None
+        }
+    }
+
+    for cat_name, cat_info in categories.items():
+        role = cat_info["role"]
+        if role:
+            overwrites = {
+                everyone: discord.PermissionOverwrite(read_messages=False),
+                role: discord.PermissionOverwrite(read_messages=True)
+            }
+        else:
+            overwrites = None
+
+        category = await guild.create_category(cat_name, overwrites=overwrites)
+
+        for chan_name in cat_info["channels"]:
+            await guild.create_text_channel(chan_name, category=category)
+
+    await ctx.send("✅ Structure avec rôles et permissions créée avec succès !")
+
 
 
 # 💬 Gestion des messages pour les commandes personnalisées
