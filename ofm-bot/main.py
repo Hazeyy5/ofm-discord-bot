@@ -1,5 +1,3 @@
-from keep_alive import keep_alive
-keep_alive()
 import os
 from dotenv import load_dotenv
 
