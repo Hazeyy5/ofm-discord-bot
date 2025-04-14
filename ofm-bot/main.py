@@ -15,8 +15,6 @@ intents.guilds = True
 
 bot = commands.Bot(command_prefix='!', intents=intents)
 
-keep_alive()  # seulement si tu utilises le système anti-sleep de Replit
-
 @bot.event
 async def on_ready():
     print(f"✅ Bot connecté en tant que {bot.user}")
