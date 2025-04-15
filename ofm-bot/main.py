@@ -34,6 +34,8 @@ async def on_ready():
     except Exception as e:
         print(f"❌ Erreur au démarrage du scheduler : {e}")
 
+await log_message(f"✅ Bot connecté en tant que **{bot.user}** – {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
+
 async def log_message(message: str):
     channel = discord.utils.get(bot.get_all_channels(), name="logs")
     if channel:
