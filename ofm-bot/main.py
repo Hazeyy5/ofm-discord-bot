@@ -210,6 +210,33 @@ async def planifie(ctx, nom_creatrice: str, contenu: str, jour: str, heure: str)
         await ctx.send("❌ Erreur dans la commande. Format : `!planifie Naomi \"contenu\" jour heure`")
         print(f"Erreur planification : {e}")
 
+@bot.command()
+async def planning(ctx):
+    try:
+        with open("planning.json", "r") as f:
+            planning = json.load(f)
+
+        if not planning:
+            await ctx.send("📭 Aucun contenu planifié pour le moment.")
+            return
+
+        # Trier par date
+        planning.sort(key=lambda x: x["timestamp"])
+
+        message = "**📅 Planning à venir :**\n\n"
+        for item in planning:
+            date_event = datetime.fromisoformat(item["timestamp"])
+            date_str = date_event.strftime("%A %d %B à %Hh%M")
+            message += f"• **{item['nom']}** – {item['contenu']} – *{date_str}*\n"
+
+        await ctx.send(message)
+
+    except FileNotFoundError:
+        await ctx.send("❌ Aucun fichier de planning trouvé.")
+    except Exception as e:
+        await ctx.send("❌ Une erreur est survenue lors de la lecture du planning.")
+        print(f"Erreur planning : {e}")
+
 
 @bot.command()
 async def setup_agence(ctx):
