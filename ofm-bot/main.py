@@ -7,6 +7,9 @@ import discord
 from discord.ext import commands
 import openai
 
+import json
+from datetime import datetime, timedelta
+
 from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 from datetime import datetime
