@@ -3,6 +3,8 @@ from dotenv import load_dotenv
 
 load_dotenv()  # ← charge les variables depuis .env
 
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+import pytz
 import discord
 from discord.ext import commands
 import openai
