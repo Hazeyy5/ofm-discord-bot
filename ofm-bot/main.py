@@ -372,4 +372,5 @@ async def daily_check():
         )
         await channel.send(message)
 
+scheduler.start()
 bot.run(os.getenv("DISCORD_TOKEN"))
