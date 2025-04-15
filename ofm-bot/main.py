@@ -176,7 +176,17 @@ async def planifie(ctx, nom_creatrice: str, contenu: str, jour: str, heure: str)
         date_event = today + timedelta(days=jours_diff)
 
         # Ajouter l'heure
-        h, m = map(int, heure.split("h"))
+        try:
+    if "h" not in heure:
+        raise ValueError("Format d'heure invalide. Utilise `18h30`, `20h`, etc.")
+
+    h_m = heure.split("h")
+    h = int(h_m[0])
+    m = int(h_m[1]) if len(h_m) > 1 and h_m[1] else 0
+except Exception:
+    await ctx.send("❌ Heure invalide. Utilise un format comme `18h` ou `19h30`.")
+    return
+
         date_event = date_event.replace(hour=h, minute=m, second=0)
 
         # Charger la base
