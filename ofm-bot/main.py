@@ -26,16 +26,18 @@ bot = commands.Bot(command_prefix='!', intents=intents)
 
 @bot.event
 async def on_ready():
-    print(f"✅ Bot connecté en tant que {bot.user}")
+    from pytz import timezone
+    paris_time = datetime.now(timezone("Europe/Paris")).strftime('%d/%m/%Y %H:%M:%S')
 
-    # On logue dans #logs via une tâche à part
-    bot.loop.create_task(log_message(f"✅ Bot connecté en tant que **{bot.user}** – {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}"))
+    print(f"✅ Bot connecté en tant que {bot.user}")
+    bot.loop.create_task(log_message(f"✅ Bot connecté en tant que **{bot.user}** – {paris_time}"))
 
     try:
         scheduler.start()
         print("📅 Scheduler lancé avec succès.")
     except Exception as e:
         print(f"❌ Erreur au démarrage du scheduler : {e}")
+
 
 async def log_message(message: str):
     channel = discord.utils.get(bot.get_all_channels(), name="logs")
@@ -45,7 +47,10 @@ async def log_message(message: str):
 @bot.event
 async def on_disconnect():
     print("❌ Bot déconnecté.")
-    await log_message(f"❌ Bot déconnecté – {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
+    from pytz import timezone
+paris_time = datetime.now(timezone("Europe/Paris")).strftime('%d/%m/%Y %H:%M:%S')
+await log_message(f"❌ Bot déconnecté – {paris_time}")
+
 
 
 @bot.command()
