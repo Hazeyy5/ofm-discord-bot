@@ -34,6 +34,12 @@ async def on_ready():
     except Exception as e:
         print(f"❌ Erreur au démarrage du scheduler : {e}")
 
+async def log_message(message: str):
+    channel = discord.utils.get(bot.get_all_channels(), name="logs")
+    if channel:
+        await channel.send(f"📝 {message}")
+
+
 @bot.command()
 async def contrat(ctx, numero: int, *, nom: str):
     offres = {
@@ -205,6 +211,7 @@ async def planifie(ctx, nom_creatrice: str, contenu: str, jour: str, heure: str)
             json.dump(planning, f, indent=2)
 
         await ctx.send(f"✅ Planifié : **{contenu}** pour **{nom_creatrice}** le **{jour} à {heure}**")
+        await log_message(f"{ctx.author} a planifié : {nom_creatrice} – {contenu} – {
 
     except Exception as e:
         await ctx.send("❌ Erreur dans la commande. Format : `!planifie Naomi \"contenu\" jour heure`")
