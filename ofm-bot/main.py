@@ -211,7 +211,7 @@ async def planifie(ctx, nom_creatrice: str, contenu: str, jour: str, heure: str)
             json.dump(planning, f, indent=2)
 
         await ctx.send(f"✅ Planifié : **{contenu}** pour **{nom_creatrice}** le **{jour} à {heure}**")
-        await log_message(f"{ctx.author} a planifié : {nom_creatrice} – {contenu} – {
+        await log_message(f"{ctx.author} a planifié : {nom_creatrice} – {contenu} – {jour} à {heure}")
 
     except Exception as e:
         await ctx.send("❌ Erreur dans la commande. Format : `!planifie Naomi \"contenu\" jour heure`")
