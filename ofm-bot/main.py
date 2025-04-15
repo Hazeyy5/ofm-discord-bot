@@ -41,6 +41,11 @@ async def log_message(message: str):
     if channel:
         await channel.send(f"📝 {message}")
 
+@bot.event
+async def on_disconnect():
+    print("❌ Bot déconnecté.")
+    await log_message(f"❌ Bot déconnecté – {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
+
 
 @bot.command()
 async def contrat(ctx, numero: int, *, nom: str):
