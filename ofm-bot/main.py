@@ -24,6 +24,12 @@ bot = commands.Bot(command_prefix='!', intents=intents)
 @bot.event
 async def on_ready():
     print(f"✅ Bot connecté en tant que {bot.user}")
+    
+    try:
+        scheduler.start()
+        print("📅 Scheduler lancé avec succès.")
+    except Exception as e:
+        print(f"❌ Erreur au démarrage du scheduler : {e}")
 
 @bot.command()
 async def contrat(ctx, numero: int, *, nom: str):
@@ -374,7 +380,5 @@ async def daily_check():
             "✅ Suivis DMs :"
         )
         await channel.send(message)
-
-scheduler.start()
 
 bot.run(os.getenv("DISCORD_TOKEN"))
