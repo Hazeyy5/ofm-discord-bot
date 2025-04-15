@@ -27,14 +27,15 @@ bot = commands.Bot(command_prefix='!', intents=intents)
 @bot.event
 async def on_ready():
     print(f"✅ Bot connecté en tant que {bot.user}")
-    
+
+    # On logue dans #logs via une tâche à part
+    bot.loop.create_task(log_message(f"✅ Bot connecté en tant que **{bot.user}** – {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}"))
+
     try:
         scheduler.start()
         print("📅 Scheduler lancé avec succès.")
     except Exception as e:
         print(f"❌ Erreur au démarrage du scheduler : {e}")
-
-await log_message(f"✅ Bot connecté en tant que **{bot.user}** – {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
 
 async def log_message(message: str):
     channel = discord.utils.get(bot.get_all_channels(), name="logs")
