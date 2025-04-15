@@ -157,6 +157,51 @@ Puis génère un message de contact professionnel et naturel à lui envoyer pour
         print(f"Erreur GPT analyse : {e}")
 
 @bot.command()
+async def planifie(ctx, nom_creatrice: str, contenu: str, jour: str, heure: str):
+    try:
+        # Convertir jour + heure en datetime
+        jour = jour.lower()
+        jours_map = {
+            "lundi": 0, "mardi": 1, "mercredi": 2, "jeudi": 3,
+            "vendredi": 4, "samedi": 5, "dimanche": 6
+        }
+
+        today = datetime.now(pytz.timezone("Europe/Paris"))
+        cible_jour = jours_map.get(jour)
+        if cible_jour is None:
+            return await ctx.send("❌ Jour invalide. Utilise un jour comme `lundi`, `mardi`, etc.")
+
+        # Trouver la date du prochain jour demandé
+        jours_diff = (cible_jour - today.weekday()) % 7
+        date_event = today + timedelta(days=jours_diff)
+
+        # Ajouter l'heure
+        h, m = map(int, heure.split("h"))
+        date_event = date_event.replace(hour=h, minute=m, second=0)
+
+        # Charger la base
+        with open("planning.json", "r") as f:
+            planning = json.load(f)
+
+        # Ajouter l'événement
+        planning.append({
+            "nom": nom_creatrice,
+            "contenu": contenu,
+            "timestamp": date_event.isoformat()
+        })
+
+        # Sauver
+        with open("planning.json", "w") as f:
+            json.dump(planning, f, indent=2)
+
+        await ctx.send(f"✅ Planifié : **{contenu}** pour **{nom_creatrice}** le **{jour} à {heure}**")
+
+    except Exception as e:
+        await ctx.send("❌ Erreur dans la commande. Format : `!planifie Naomi \"contenu\" jour heure`")
+        print(f"Erreur planification : {e}")
+
+
+@bot.command()
 async def setup_agence(ctx):
     guild = ctx.guild
 
@@ -383,5 +428,31 @@ async def daily_check():
             "✅ Suivis DMs :"
         )
         await channel.send(message)
+
+@scheduler.scheduled_job("interval", minutes=1)
+async def check_rappels():
+    now = datetime.now(pytz.timezone("Europe/Paris"))
+    with open("planning.json", "r") as f:
+        planning = json.load(f)
+
+    nouveaux = []
+    for item in planning:
+        date_event = datetime.fromisoformat(item["timestamp"])
+        delta = (date_event - now).total_seconds()
+
+        if 0 <= delta < 60:
+            # Rappel à envoyer maintenant
+            channel = discord.utils.get(bot.get_all_channels(), name="rappel")
+            if channel:
+                await channel.send(
+                    f"⏰ **Rappel :** {item['nom']} → _{item['contenu']}_ prévu **maintenant**"
+                )
+        else:
+            # Garder pour plus tard
+            nouveaux.append(item)
+
+    with open("planning.json", "w") as f:
+        json.dump(nouveaux, f, indent=2)
+
 
 bot.run(os.getenv("DISCORD_TOKEN"))
