@@ -46,10 +46,10 @@ async def log_message(message: str):
 
 @bot.event
 async def on_disconnect():
-    print("❌ Bot déconnecté.")
     from pytz import timezone
-paris_time = datetime.now(timezone("Europe/Paris")).strftime('%d/%m/%Y %H:%M:%S')
-await log_message(f"❌ Bot déconnecté – {paris_time}")
+    paris_time = datetime.now(timezone("Europe/Paris")).strftime('%d/%m/%Y %H:%M:%S')
+    print(f"❌ Bot déconnecté – {paris_time}")
+    await log_message(f"❌ Bot déconnecté – {paris_time}")
 
 
 
