@@ -3,8 +3,6 @@ from dotenv import load_dotenv
 
 load_dotenv()  # ← charge les variables depuis .env
 
-from apscheduler.schedulers.asyncio import AsyncIOScheduler
-import pytz
 import discord
 from discord.ext import commands
 import openai
@@ -356,6 +354,11 @@ async def handle_gpt_chat(message, prompt):
         await message.channel.send("❌ Erreur lors de la réponse.")
         print(f"Erreur GPT chat : {e}")
         
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+import pytz
+
+scheduler = AsyncIOScheduler(timezone=pytz.timezone("Europe/Paris"))
+
 @scheduler.scheduled_job("cron", hour=10)
 async def daily_check():
     channel = discord.utils.get(bot.get_all_channels(), name="direction")
@@ -373,4 +376,5 @@ async def daily_check():
         await channel.send(message)
 
 scheduler.start()
+
 bot.run(os.getenv("DISCORD_TOKEN"))
