@@ -367,7 +367,7 @@ scheduler = AsyncIOScheduler(timezone=pytz.timezone("Europe/Paris"))
 
 @scheduler.scheduled_job("cron", hour=10)
 async def daily_check():
-    channel = discord.utils.get(bot.get_all_channels(), name="direction")
+    channel = discord.utils.get(bot.get_all_channels(), name="rappel")
     if channel:
         today = datetime.now().strftime("%A %d %B %Y")
         message = (
