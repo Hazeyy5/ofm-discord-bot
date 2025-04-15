@@ -113,6 +113,41 @@ async def contrat(ctx, numero: int, *, nom: str):
 
 
 @bot.command()
+async def analyse(ctx, pseudo: str):
+    await ctx.channel.typing()
+
+    prompt = f"""
+Tu es un recruteur d'agence OnlyFans. Analyse ce profil social basé sur son pseudo : {pseudo}.
+Décris son positionnement probable, son univers, sa niche et son potentiel pour OnlyFans.
+Puis génère un message de contact professionnel et naturel à lui envoyer pour proposer une collaboration avec Radiance Agency.
+    """
+
+    try:
+        completion = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": "Tu es un expert en recrutement OnlyFans."},
+                {"role": "user", "content": prompt}
+            ],
+            max_tokens=400,
+            temperature=0.9,
+        )
+
+        reply = completion.choices[0].message["content"]
+
+        embed = discord.Embed(
+            title=f"📊 Analyse du profil {pseudo}",
+            description=reply,
+            color=discord.Color.gold()
+        )
+        embed.set_footer(text="Analyse IA – Radiance Bot")
+        await ctx.send(embed=embed)
+
+    except Exception as e:
+        await ctx.send("❌ Erreur lors de l’analyse.")
+        print(f"Erreur GPT analyse : {e}")
+
+@bot.command()
 async def setup_agence(ctx):
     guild = ctx.guild
 
