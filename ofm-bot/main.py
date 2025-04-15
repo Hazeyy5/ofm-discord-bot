@@ -356,11 +356,9 @@ async def handle_gpt_chat(message, prompt):
         await message.channel.send("❌ Erreur lors de la réponse.")
         print(f"Erreur GPT chat : {e}")
         
-        
-scheduler.start()
-    @scheduler.scheduled_job("cron", hour=10)
+@scheduler.scheduled_job("cron", hour=10)
 async def daily_check():
-    channel = discord.utils.get(bot.get_all_channels(), name="direction")  # remplace si ton salon a un autre nom
+    channel = discord.utils.get(bot.get_all_channels(), name="direction")
     if channel:
         today = datetime.now().strftime("%A %d %B %Y")
         message = (
