@@ -19,7 +19,8 @@ async def log_message(message: str):
     if channel:
         await channel.send(f"📝 {message}")
 
-# Chargement automatique des cogs\async def load_extensions():
+# Chargement automatique des cogs
+async def load_extensions():
     for filename in os.listdir("./cogs"):
         if filename.endswith(".py"):
             try:
