@@ -1,9 +1,7 @@
 import os
-from dotenv import load_dotenv
 import discord
 from discord.ext import commands
-from apscheduler.schedulers.asyncio import AsyncIOScheduler
-import pytz
+from dotenv import load_dotenv
 
 load_dotenv()
 
@@ -11,22 +9,34 @@ intents = discord.Intents.default()
 intents.message_content = True
 intents.guilds = True
 
-bot = commands.Bot(command_prefix='!', intents=intents)
+bot = commands.Bot(command_prefix="!", intents=intents)
 
-scheduler = AsyncIOScheduler(timezone=pytz.timezone("Europe/Paris"))
+# Fonction pour logger dans le salon logs
+discord.utils.setup_logging()
+
+async def log_message(message: str):
+    channel = discord.utils.get(bot.get_all_channels(), name="logs")
+    if channel:
+        await channel.send(f"📝 {message}")
+
+# Chargement automatique des cogs\async def load_extensions():
+    for filename in os.listdir("./cogs"):
+        if filename.endswith(".py"):
+            try:
+                await bot.load_extension(f"cogs.{filename[:-3]}")
+                print(f"✅ Module chargé : {filename}")
+            except Exception as e:
+                print(f"❌ Erreur dans le chargement de {filename} : {e}")
 
 @bot.event
 async def on_ready():
+    await load_extensions()
     print(f"✅ Bot connecté en tant que {bot.user}")
-    from utils.logger import log_message
-    await log_message(bot, f"✅ Bot connecté – {bot.user}")
-    scheduler.start()
+    await log_message(f"✅ Bot connecté en tant que **{bot.user}**")
 
-# Chargement automatique des cogs
-for filename in os.listdir('./cogs'):
-    if filename.endswith('.py'):
-        bot.load_extension(f'cogs.{filename[:-3]}')
-        bot.load_extension("cogs.contrat")
+@bot.event
+async def on_disconnect():
+    await log_message(f"❌ Bot déconnecté – {bot.user}")
 
-
+# Lancement du bot
 bot.run(os.getenv("DISCORD_TOKEN"))
